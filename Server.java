@@ -2,27 +2,20 @@ import java.net.*;
 import java.io.*;
 
 public class Server {
-    ServerSocket  SS;
-    DataOutputStream   outstream;
-    DataInputStream    instream;
-    Socket  socket;
+    private DataOutputStream   outstream;
+    private DataInputStream    instream;
+    private Socket  socket;
 
-    public Server(int port) {
+    public Server(Socket s) {
         try{
-            SS = new ServerSocket(port);
-            System.out.println("等待連接中...");
+            socket = s;
+            instream = new DataInputStream(socket.getInputStream());
+            outstream = new DataOutputStream(socket.getOutputStream());
         }
         catch(IOException e){
-            System.out.println(e.toString());
             e.printStackTrace();
             System.exit(1);
         }
-    }
-    public void accept() throws IOException {
-        socket = SS.accept();
-        instream = new DataInputStream(socket.getInputStream());
-        outstream = new DataOutputStream(socket.getOutputStream());
-        System.out.println("連接成功!");
     }
     public void print(String s) throws IOException {
         System.out.print(s);
@@ -39,16 +32,20 @@ public class Server {
         outstream.writeUTF("1" + s);
     }
     public void needReceive() throws IOException {
+        System.out.println("needReceive");
         outstream.writeUTF("2");
     }
     public void cls() throws IOException {
         outstream.writeUTF("3");
     }
     public void pressEnter() throws IOException {
+        System.out.println("pressEnter");
         outstream.writeUTF("4");
     }
     public String receive() throws IOException {
-        return instream.readUTF();
+        String str = instream.readUTF();
+        System.out.println(str);
+        return str;
     }
     public void close() throws IOException {
         outstream.writeUTF("9");
